@@ -23,6 +23,9 @@ const ADMIN_TOKEN = process.env.API_KEY;
  */
 async function getProducts() {
 	// 請實作此函式
+	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`);
+	const data = await response.json();
+	return data.products;
 	// 提示：
 	// 1. 使用 fetch() 發送 GET 請求
 	// 2. 使用 response.json() 解析回應
@@ -35,6 +38,13 @@ async function getProducts() {
  */
 async function getCart() {
 	// 請實作此函式
+	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`);
+	const data = await response.json();
+	return {
+		carts: data.carts,
+		total: data.total,
+		finalTotal: data.finalTotal
+	};
 }
 
 /**
@@ -67,6 +77,15 @@ async function addToCart(productId, quantity) {
 	// 2. body 格式：{ data: { productId: "xxx", quantity: 1 } }
 	// 3. 記得設定 headers: { 'Content-Type': 'application/json' }
 	// 4. body 要用 JSON.stringify() 轉換
+	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`, {
+		method: "POST",
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({
+		data : { productId, quantity} })
+		})
+
+	const result = await response.json();
+	return result;
 }
 
 /**
@@ -80,6 +99,14 @@ async function updateCartItem(cartId, quantity) {
 	// 提示：
 	// 1. 發送 PATCH 請求
 	// 2. body 格式：{ data: { id: "購物車ID", quantity: 數量 } }
+	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`,{
+		method: "PATCH",
+		headers: { 'Content-Type': 'application/json' },		
+		body : JSON.stringify({
+			data: {id:cartId, quantity:quantity}
+		})
+	});
+	return await response.json();
 }
 
 /**
@@ -90,7 +117,15 @@ async function updateCartItem(cartId, quantity) {
 async function removeCartItem(cartId) {
 	// 請實作此函式
 	// 提示：發送 DELETE 請求到 /carts/{id}
+
+	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts/{cartId}`, {
+		method:"DELETE"
+	});
+	
+	return await response.json();
 }
+
+
 
 /**
  * 4. 清空購物車
@@ -99,6 +134,14 @@ async function removeCartItem(cartId) {
 async function clearCart() {
 	// 請實作此函式
 	// 提示：發送 DELETE 請求到 /carts
+
+	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`,{
+		method: "DELETE"
+	});
+	// 刪除清空不需要寫body帶回資料
+
+	return await response.json();
+	
 }
 
 // ========================================
