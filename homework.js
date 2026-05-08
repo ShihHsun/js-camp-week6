@@ -25,6 +25,7 @@ async function getProducts() {
 	// 請實作此函式
 	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`);
 	const data = await response.json();
+	// console.log(data);
 	return data.products;
 	// 提示：
 	// 1. 使用 fetch() 發送 GET 請求
@@ -39,12 +40,19 @@ async function getProducts() {
 async function getCart() {
 	// 請實作此函式
 	const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/carts`);
+
 	const data = await response.json();
-	return {
+	
+	const {carts, total, finalTotal} = data;
+	return {carts, total, finalTotal};
+
+/*	return {
 		carts: data.carts,
 		total: data.total,
-		finalTotal: data.finalTotal
+		finalTotal: data.finalTotal,
 	};
+*/
+
 }
 
 /**
@@ -58,6 +66,21 @@ async function getProductsSafe() {
 	// 2. 檢查 response.ok 判斷是否成功
 	// 3. 成功回傳 { success: true, data: [...] }
 	// 4. 失敗回傳 { success: false, error: '錯誤訊息' }
+try{
+		const response = await fetch(`${BASE_URL}/api/livejs/v1/customer/${API_PATH}/products`);
+		const data = await response.json();
+
+		if(!response.ok){
+			return { success: false, error: data.message};
+		}
+
+		return { success:true, data: data.products};
+
+}catch (error){
+	//console.log(error);
+	return { success: false, error: error.message };
+}
+
 }
 
 // ========================================
@@ -84,8 +107,8 @@ async function addToCart(productId, quantity) {
 		data : { productId, quantity} })
 		})
 
-	const result = await response.json();
-	return result;
+	const data = await response.json();
+	return data;
 }
 
 /**
@@ -106,7 +129,8 @@ async function updateCartItem(cartId, quantity) {
 			data: {id:cartId, quantity:quantity}
 		})
 	});
-	return await response.json();
+	const data = await response.json();
+	return data;
 }
 
 /**
@@ -122,7 +146,8 @@ async function removeCartItem(cartId) {
 		method:"DELETE"
 	});
 	
-	return await response.json();
+	const data = await response.json();
+	return data;
 }
 
 
@@ -140,7 +165,8 @@ async function clearCart() {
 	});
 	// 刪除清空不需要寫body帶回資料
 
-	return await response.json();
+	const data = await response.json();
+	return data;
 	
 }
 
@@ -153,12 +179,22 @@ async function clearCart() {
 
 1. HTTP 狀態碼的分類（1xx, 2xx, 3xx, 4xx, 5xx 各代表什麼）
    答：
+	 1XX-請求已接收，正在處理
+	 2XX-請求成功接收
+	 3XX-需要進一步動作以完成請求
+	 4XX-請求語法錯誤/無法完成
+	 5XX-伺服器未能完成有效請求
 
 2. GET、POST、PATCH、PUT、DELETE 的差異
    答：
+	 GET-從伺服器獲取資料
+	 POST- 向伺服器提交資料
+	 PATCH-更新部分已有資源
+	 PUT-更新整份已有資源
+	 DELETE-刪除伺服器上的資源
 
 3. 什麼是 RESTful API？
-   答：
+   答：對應HTTP Method 和 URL 滿足資料操作
 
 
 */
@@ -227,6 +263,9 @@ if (require.main === module) {
 
 		console.log("\n=== 測試結束 ===");
 		console.log("\n提示：執行 node test.js 進行完整驗證");
+
+
+		
 	}
 
 	runTests();
